@@ -52,7 +52,7 @@ if __name__ == "__main__":
         if MCP_TRANSPORT == "stdio":
             logger.info({"message": "Starting Mealie MCP Server"})
             mcp.run(transport="stdio")
-        if MCP_TRANSPORT == "streamable-http":
+        elif MCP_TRANSPORT == "streamable-http":
             logger.info({"message": "Starting Mealie MCP Server on streamable-http"})
             mcp.run(transport="streamable-http")
         else:
