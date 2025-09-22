@@ -3,7 +3,7 @@ import os
 import traceback
 
 from dotenv import load_dotenv
-from fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 
 from mealie import MealieFetcher
 from prompts import register_prompts
@@ -24,8 +24,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger("mealie-mcp")
 
-mcp = FastMCP("mealie")
+mcp = FastMCP(name="mealie")
 
+MCP_TRANSPORT = os.getenv("MCP_TRANSPORT", "stdio")
 MEALIE_BASE_URL = os.getenv("MEALIE_BASE_URL")
 MEALIE_API_KEY = os.getenv("MEALIE_API_KEY")
 if not MEALIE_BASE_URL or not MEALIE_API_KEY:
@@ -48,8 +49,17 @@ register_all_tools(mcp, mealie)
 
 if __name__ == "__main__":
     try:
-        logger.info({"message": "Starting Mealie MCP Server"})
-        mcp.run(transport="stdio")
+        if MCP_TRANSPORT == "stdio":
+            logger.info({"message": "Starting Mealie MCP Server"})
+            mcp.run(transport="stdio")
+        elif MCP_TRANSPORT == "streamable-http":
+            logger.info({"message": "Starting Mealie MCP Server on streamable-http"})
+            mcp.run(transport="streamable-http")
+        else:
+            logger.error({"message": f"Unsupported MCP_TRANSPORT: {MCP_TRANSPORT}. Supported transports are 'stdio' and 'streamable-http'."})
+            raise ValueError(
+                f"Unsupported MCP_TRANSPORT: {MCP_TRANSPORT}. Supported transports are 'stdio' and 'streamable-http'."
+            )
     except Exception as e:
         logger.critical(
             {"message": "Fatal error in Mealie MCP Server", "error": str(e)}
