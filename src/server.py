@@ -3,7 +3,7 @@ import os
 import traceback
 
 from dotenv import load_dotenv
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from mealie import MealieFetcher
 from prompts import register_prompts
@@ -54,7 +54,7 @@ if __name__ == "__main__":
             mcp.run(transport="stdio")
         elif MCP_TRANSPORT == "streamable-http":
             logger.info({"message": "Starting Mealie MCP Server on streamable-http"})
-            mcp.run(transport="streamable-http")
+            mcp.run(transport="http", host="0.0.0.0", port=8000, path="/mcp")
         else:
             logger.error({"message": f"Unsupported MCP_TRANSPORT: {MCP_TRANSPORT}. Supported transports are 'stdio' and 'streamable-http'."})
             raise ValueError(
